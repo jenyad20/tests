@@ -1,29 +1,46 @@
 package com.yevgeny.trading.book;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static com.yevgeny.trading.book.OrderType.MARKET;
 
 public class OrderBook {
 
-    private List<Order> bids;
-    private List<Order> asks;
+    private TreeSet<Order> bids;
+    private TreeSet<Order> asks;
+    private Map<Integer, Order> orders;
 
     public OrderBook() {
-        bids = new ArrayList<>();
-        asks = new ArrayList<>();
+        bids = new TreeSet<>((o1, o2) -> {
+            if(o1.getPrice() == o2.getPrice()) return Integer.compare(o1.getId(), o2.getId());
+            return Double.compare(o2.getPrice(), o1.getPrice());
+        });
+
+        asks = new TreeSet<>((o1, o2) -> {
+            if(o1.getPrice() == o2.getPrice()) return Integer.compare(o1.getId(), o2.getId());
+            return Double.compare(o1.getPrice(), o2.getPrice());
+        });
+        orders = new ConcurrentHashMap<>();
     }
 
     public void addOrder(Order order){
-
+        orders.put(order.getId(), order);
+        if(order.isBid()) bids.add(order);
+        else asks.add(order);
     }
 
-    public void modifyOrder(Order order){
-
+    public void modifyOrder(Order order) throws Exception {
+        Order curr = orders.getOrDefault(order.getId(), null);
+        if(curr == null) throw new Exception("not found");
+        curr.setQuantity(order.getQuantity());
     }
 
     public void deleteOrder(Order order){
-
+        order = orders.getOrDefault(order.getId(), null);
+        if(order == null) return;
+        if(order.isBid()) bids.remove(order);
+        else asks.remove(order);
+        orders.remove(order.getId());
     }
 
     public void processOrder(Order order){
@@ -31,53 +48,12 @@ public class OrderBook {
     }
 
     public Order getBestBid(){
-        return null;
+        return bids.first();
     }
 
     public Order getBestOffer(){
-        return null;
+        return asks.first();
     }
 
-    public static void main(String[] args) throws InterruptedException {
-//        Queue<Order> orderQueue = new PriorityQueue<>();
-        TreeMap <Integer, Order> map = new TreeMap<>();
-        TreeSet<Order> set = new TreeSet<>();
-        Order order1 = new Order(1, false, 8, 10, 25, "test", MARKET);
-        Order order2 = new Order(1, false, 6, 5, 25, "test", MARKET);
-        Order order3 = new Order(1, false, 5, 20, 25, "test", MARKET);
-        Order order4 = new Order(1, false, 3, 20, 25, "test", MARKET);
-//        orderQueue.add(order1);
-//        orderQueue.add(order2);
-//        orderQueue.add(order3);
 
-//        map.putIfAbsent(order1.getId(), order1);
-//        map.putIfAbsent(order2.getId(), order2);
-//        map.putIfAbsent(order3.getId(), order3);
-//        map.putIfAbsent(order4.getId(), order4);
-        set.add(order1);
-        set.add(order2);
-        set.add(order3);
-        set.add(order4);
-
-
-        order2.setPrice(30);
-        order3.setId(2);
-
-        Thread.sleep(2000);
-
-        System.out.println(set.contains(order2));
-        System.out.println(set.remove(order4));
-
-//        System.out.println(set.first());
-        System.out.println(set.pollFirst());
-        System.out.println(set.pollFirst());
-        System.out.println(set.pollFirst());
-        System.out.println(set.pollFirst());
-
-
-//        System.out.println(map.pollFirstEntry().getValue());
-//        System.out.println(orderQueue.poll());
-//        System.out.println(orderQueue.poll());
-//        System.out.println(orderQueue.poll());
-    }
 }

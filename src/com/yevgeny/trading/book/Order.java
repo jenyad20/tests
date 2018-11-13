@@ -1,14 +1,14 @@
 package com.yevgeny.trading.book;
 
-public class Order implements Comparable<Order>{
+public class Order{
 
-    private long timestamp;
-    private boolean isBid;
-    private int id;
-    private double price;
-    private int quantity;
-    private String venue;
-    private OrderType type;
+    private final long timestamp;
+    private final boolean isBid;
+    private final int id;
+    private final double price;
+    private volatile int quantity;
+    private final String venue;
+    private final OrderType type;
 
     public Order(long timestamp, boolean isBid, int id, double price, int quantity, String venue, OrderType type) {
         this.timestamp = timestamp;
@@ -20,36 +20,21 @@ public class Order implements Comparable<Order>{
         this.type = type;
     }
 
+
     public long getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public boolean isBid() {
         return isBid;
     }
 
-    public void setBid(boolean bid) {
-        isBid = bid;
-    }
-
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public double getPrice() {
         return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public int getQuantity() {
@@ -64,16 +49,8 @@ public class Order implements Comparable<Order>{
         return venue;
     }
 
-    public void setVenue(String venue) {
-        this.venue = venue;
-    }
-
     public OrderType getType() {
         return type;
-    }
-
-    public void setType(OrderType type) {
-        this.type = type;
     }
 
     @Override
@@ -89,9 +66,4 @@ public class Order implements Comparable<Order>{
                 '}';
     }
 
-    @Override
-    public int compareTo(Order order) {
-        if(this.price == order.price) return Integer.compare(this.id, order.id);
-        return Double.compare(this.price, order.price);
-    }
 }
