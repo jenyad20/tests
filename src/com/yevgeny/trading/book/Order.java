@@ -45,6 +45,23 @@ public class Order{
         this.quantity = quantity;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Order order = (Order) o;
+
+        if (getTimestamp() != order.getTimestamp()) return false;
+        if (isBid() != order.isBid()) return false;
+        if (getId() != order.getId()) return false;
+        if (Double.compare(order.getPrice(), getPrice()) != 0) return false;
+        if (!getVenue().equals(order.getVenue())) return false;
+        return getType() == order.getType();
+
+    }
+
+
     public String getVenue() {
         return venue;
     }
