@@ -3,3 +3,4 @@
 /out/
 .idea/markdown-navigator/
 out/production/orderbook/com/yevgeny/trading/book/BidComparator.class
+lib/
